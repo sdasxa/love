@@ -1,0 +1,26 @@
+#name: 构建Mac应用
+on:
+  push:  # 代码推送时自动触发构建
+    branches: [main]  # 可根据实际分支名修改
+jobs:
+  build:
+    runs-on: macos-latest  # 指定运行环境为macOS
+    steps:
+      - uses: actions/checkout@v4  # 拉取仓库代码
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"  # 指定Python版本
+      - name: 安装依赖
+        run: pip install pyinstaller
+      - name: 打包Mac应用
+        run: |
+          pyinstaller --onefile --windowed \
+          --name "LoveMessages" \
+          --osx-bundle-identifier com.yourname.lovemessages \
+          love.py
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-app
+          path: dist/LoveMessages.app  # 打包后的应用路径
